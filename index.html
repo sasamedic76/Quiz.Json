@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Quiz</title>
+        <style type="text/css">
+
+          * {
+            font-family: arial;
+            font-weight: bold;
+          }
+          #erste{
+            background-color: #e6f2ff;
+            border: 1,2px solid gray;
+            width: 553px;
+            height: 839px;
+            text-align: center;
+            position: relative;
+          }
+        </style>
+    </head>
+    <body>
+        <div id="erste"></div> 
+           
+        <script>
+          var jsonData = '{"quiz":{ "q1":{"question":"Which one is correct team name in NBA?", "options": [ "New York Bulls","Los Angeles Kings", "Golden State Warriros","Huston Rocket"], "answer": "Huston Rocket"},"q2":{"question": "\'Namaste\' is a traditional greeting in which Asian language?", "options":["Hindi","Mandarin", "Nepalese", "Thai"],"answer": "Hindi"}, "q3": {"question": "The Spree river flows through which major European capital city?","options": ["Berlin","Paris", "Rome", "London"], "answer": "Berlin"},"q4":{ "question": "Which famous artist had both a \'Rose Period\' and a \'Blue Period\'?","options": ["Pablo Picasso", "Vincent van Gogh", "Salvador Dalí","Edgar Degas"],"answer": "Pablo Picasso"}}}'; 
+          var jsPars = JSON.parse(jsonData);
+          var b = jsPars.quiz;
+          
+          var nameObj = [];
+          var rightAnsw = [];
+          var storageData =[];
+        
+          function separateObj (x) {
+              this.x = x;
+              for (let property in x) {
+                  let obj = x[property];
+                  let nameQuestion = property;
+                  nameObj.push(nameQuestion);
+                  let anyAnsw = obj.answer;
+                  rightAnsw.push(anyAnsw);
+                   makeEl(obj,nameQuestion);
+              }
+
+              let clickButBack = document.createElement("button");
+                  clickButBack.innerHTML="BACK</br>to previous session";
+                  clickButBack.style.margin="40px 10px";
+                  clickButBack.style.border="5px solid black";
+                  clickButBack.style.backgroundColor = "#d6d6c2";
+                  clickButBack.style.color="black";
+                  document.getElementById("erste").appendChild(clickButBack);
+                  clickButBack.addEventListener("click",dataBack); 
+
+              let clickBut = document.createElement("button");
+                  clickBut.innerHTML="SUBMIT</br>ANSWERS";
+                  clickBut.style.margin="40px 15px";
+                  clickBut.style.border="5px solid #ff6600";
+                  clickBut.style.backgroundColor = " #ffcccc";
+                  clickBut.style.color="#ff6600";
+                  document.getElementById("erste").appendChild(clickBut);
+                  clickBut.addEventListener("click",resultsInp); 
+
+             let clickButCl = document.createElement("button");
+                  clickButCl.innerHTML="CLEAR</br> (all saved data)";
+                  clickButCl.style.margin="30px 20px";
+                  clickButCl.style.border="5px solid #990000";
+                  clickButCl.style.color="#990000";
+                  clickButCl.style.backgroundColor = "#ffb3b3";
+                  document.getElementById("erste").appendChild(clickButCl);
+                  clickButCl.addEventListener("click",clearData); 
+          }
+
+
+          function makeEl (q,z) {
+              this.q = q;
+              this.z = z;
+              let a = document.createElement("div");
+              a.style.width= "550px";
+              a.style.border = "1.2px solid #80bfff";
+              a.style.color = "#0066cc";
+              let b = document.createElement("h2");
+              b.innerHTML = "Question" +" " + z[1] + " " + ":" + " " + q.question;
+              a.appendChild(b);
+              document.getElementById("erste").appendChild(a);
+              let e = q.options;
+              for(var i=0;i<e.length;i++) {
+                  var allAnsw =e[i];
+                  let c = document.createElement("p");
+                  c.style.margin ="8px 0"
+                  let d = document.createElement("input");
+                  d.setAttribute("type", "radio");
+                  d.setAttribute("name","answer"+z);
+                  d.setAttribute("id","answer"+ z +"_"+[i]);
+                  d.innerHTML += allAnsw;
+                  c.appendChild(d);
+                  c.innerHTML += allAnsw;
+                  a.appendChild(c);
+                  document.getElementById("erste").appendChild(a);
+                
+              }
+            }
+
+             separateObj(b);
+
+
+          function resultsInp () {
+              let savedId =[];
+              for (var i=0; i<nameObj.length;i++) {
+                  let q = nameObj[i];
+                  let inputGroup = document.getElementsByName("answer"+ q);
+                  let number = inputGroup.length;
+                  let a = [];
+
+                for (var j=0; j<number;j++){
+                    let inputAnsw = inputGroup[j];
+                    let checkAnsw = inputAnsw.checked;
+                   // let b= [];
+                  //  console.log(b);
+
+                    if (checkAnsw !== true) {
+                        a.push(checkAnsw);
+                    }
+                    if (checkAnsw !== false) {
+                       let c = [];
+                       let checkInpId = inputAnsw.id;
+                       savedId.push(checkInpId); 
+                       let inputAnswText = inputAnsw.parentNode.textContent;
+                      
+                         for (var k=0; k<rightAnsw.length;k++) {
+                             let rightAnswerOpt = rightAnsw[k];
+
+                            if (inputAnswText !== rightAnswerOpt) {
+                                let falseAnsw = false;
+                                c.push(falseAnsw);
+                            }
+                            if (c.length == rightAnsw.length) {
+                                let wAns = "You have wrongly answered Question";
+                                let rightQ = q[1];
+                                elAnswer(wAns,rightQ);
+                                
+                                
+                            }
+                            if (inputAnswText == rightAnswerOpt) {
+                                let rAns = " CORRECTLY ANSWERED Question";
+                                let rightQ = q[1];
+                                elAnswer(rAns,rightQ);
+
+                                
+                                
+                            }
+                             
+                         }
+                        
+                       
+                    }
+
+                    if ( a.length == number) {
+                        let mAns = "YOU DIDN'T ANSWER QUESTION";
+                        let rightQ = q[1];
+                        elAnswer(mAns,rightQ);
+                    } 
+                }
+              }
+                 let keysSt = Object.keys(localStorage);
+                let g = keysSt.length;
+                let savedData = "Data" + "_" + g++;
+              window.localStorage.setItem(savedData,savedId);
+              document.getElementsByClassName("Answers").innerHTML = " ";
+            
+
+          }
+
+          function elAnswer (t,nm) {
+              
+            let elAnsw =  document.createElement("div");
+            elAnsw.classList.add("Answers");
+            elAnsw.style.margin = "50px";
+            elAnsw.style.backgroundColor = "#e6f2ff";
+            elAnsw.style.textAlign = "center";
+            elAnsw.style.marginTop = "100px";
+            elAnsw.style.color = "#ccccff";
+            elAnsw.style.width = "455px";
+            elAnsw.innerHTML = t + " " + nm;
+            document.body.append(elAnsw);
+          
+          
+
+          }
+
+          function dataBack () {
+            let keysSt = Object.keys(localStorage);
+            let b =keysSt.length;
+            let d = storageData.length;
+
+            let e = "Data" +"_"+JSON.stringify(b-d-1);
+            storageData.push(e);
+           let c = window.localStorage.getItem(e);
+           let cString = c.split(",");
+
+           for (let i=0;i<cString.length;i++) {
+
+               let arrData = cString[i];
+               document.getElementById(arrData).checked=true;
+            }
+             
+          }
+
+          function clearData () {
+              
+              window.localStorage.clear();
+          }
+          
+        </script>
+    </body>
+</html>
